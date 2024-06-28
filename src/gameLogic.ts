@@ -1,5 +1,4 @@
 export interface TileType {
-    // position: { x: number, y: number };
     value: number;
   }
 export const getRandomPosition = () => ({
@@ -28,7 +27,6 @@ const generateEmptyGameBoard = (): TileType[][] => {
   for (let i = 0; i < 4; i++) {
     const row: TileType[] = [];
     for (let j = 0; j < 4; j++) {
-      // row.push({ position: {x:i,y:j}, value:-1});
       row.push({value:-1});
 
     }
@@ -85,9 +83,6 @@ export const compress = (line: TileType[]): TileType[] => {
     while (newLine.length < line.length) {
       newLine.push({ value: -1 });
     }
-    console.log("compress");
-    console.log("newLine", newLine);
-    
     return newLine;
   };
 
