@@ -1,0 +1,59 @@
+.tile {
+  width: 100px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: bold;
+  border: 1px solid #ccc;
+  background-color: #eee;
+  position: relative;
+  transition: transform 0.2s ease-in-out;
+}
+
+.tile2 {
+  background: #ede0c8;
+}
+
+.tile4 {
+  background: #ede0c8;
+}
+
+.tile8 {
+  background: #f2b179;
+}
+
+.tile16 {
+  background: #f59563;
+}
+
+.tile32 {
+  background: #f67c5f;
+}
+
+.tile64 {
+  background: #f65e3b;
+}
+
+.tile128 {
+  background: #edcf72;
+}
+
+.tile256 {
+  background: #edcc61;
+}
+
+.tile512 {
+  background: #edc850;
+}
+
+.tile1024 {
+  background: #edc53f;
+}
+
+.tile2048,
+.tile4096,
+.tile8192 {
+  background: #edc22e;
+}

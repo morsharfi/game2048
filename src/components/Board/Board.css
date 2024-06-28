@@ -1,0 +1,20 @@
+.Board {
+  display: grid;
+  grid-template-rows: repeat(4, 90px);
+  grid-gap: 10px;
+  margin: 20px;
+  position: relative;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: repeat(4, 90px);
+  grid-gap: 10px;
+}
+
+.container {
+  width: 100vw;
+  height: 100vh;
+  background: white;
+  border: 0px;
+}
