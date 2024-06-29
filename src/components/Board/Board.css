@@ -18,3 +18,30 @@
   background: white;
   border: 0px;
 }
+
+.game-over-overlay,
+.game-win-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+}
+
+.game-over-content,
+.game-win-content {
+  text-align: center;
+}
+
+.game-over-content button,
+.game-win-content button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  font-size: 18px;
+  cursor: pointer;
+}

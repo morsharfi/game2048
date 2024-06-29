@@ -1,34 +1,34 @@
 export interface TileType {
-    value: number;
-  }
+  value: number;
+}
+
 export const getRandomPosition = () => ({
   x: Math.floor(Math.random() * 4),
   y: Math.floor(Math.random() * 4),
 });
 
-const newNumber = (gameBoard:TileType[][]): TileType[][] => {
-  let newBoard : TileType[][] = [];
-  if (gameBoard.flat().reduce((count, tile) => tile.value === -1 ? count + 1 : count, 0) === 0){
+export const newNumber = (gameBoard: TileType[][]): TileType[][] => {
+  if (gameBoard.flat().every(tile => tile.value !== -1)) {
     console.log("Game Over");
-    
-  } else {
-    let firstRandPosition = getRandomPosition();
-    while (gameBoard[firstRandPosition.x][firstRandPosition.y].value !== -1){
-      firstRandPosition = getRandomPosition();
-    }
-    newBoard = gameBoard.map(row => row.map(tile => ({ ...tile })));
-    newBoard[firstRandPosition.x][firstRandPosition.y].value = 2;
+    return gameBoard;
   }
+
+  let firstRandPosition = getRandomPosition();
+  while (gameBoard[firstRandPosition.x][firstRandPosition.y].value !== -1) {
+    firstRandPosition = getRandomPosition();
+  }
+
+  const newBoard = gameBoard.map(row => row.map(tile => ({ ...tile })));
+  newBoard[firstRandPosition.x][firstRandPosition.y].value = 2;
   return newBoard;
-}
+};
 
 const generateEmptyGameBoard = (): TileType[][] => {
   const gameBoard: TileType[][] = [];
   for (let i = 0; i < 4; i++) {
     const row: TileType[] = [];
     for (let j = 0; j < 4; j++) {
-      row.push({value:-1});
-
+      row.push({ value: -1 });
     }
     gameBoard.push(row);
   }
@@ -36,7 +36,6 @@ const generateEmptyGameBoard = (): TileType[][] => {
 };
 
 export const initializeGameBoard = (): TileType[][] => {
-
   const gameBoard = generateEmptyGameBoard();
   const firstRandPosition = getRandomPosition();
 
@@ -55,6 +54,14 @@ export const initializeGameBoard = (): TileType[][] => {
   return gameBoard;
 };
 
+const compress = (line: TileType[]): TileType[] => {
+  const newLine = line.filter(tile => tile.value !== -1);
+  while (newLine.length < line.length) {
+    newLine.push({ value: -1 });
+  }
+  return newLine;
+};
+
 const merge = (line: TileType[]): TileType[] => {
   for (let i = 0; i < line.length - 1; i++) {
     if (line[i].value === line[i + 1].value && line[i].value !== -1) {
@@ -65,43 +72,55 @@ const merge = (line: TileType[]): TileType[] => {
   return line;
 };
 
-export const moveTiles = (direction: string, gameBoard:TileType[][]): TileType[][]=> {
+const moveTilesLeft = (gameBoard: TileType[][]): TileType[][] => {
+  return gameBoard.map(row => compress(merge(compress(row))));
+};
 
-  if (direction === 'left'){
-    return newNumber(moveTilesLeft(gameBoard));
-  } else if (direction === 'right'){
-    return newNumber(moveTilesRight(gameBoard));
+const moveTilesRight = (gameBoard: TileType[][]): TileType[][] => {
+  return gameBoard.map(row => compress(merge(compress(row.reverse()))).reverse());
+};
 
-  } else if (direction === 'up'){
-    return newNumber(moveTilesUp(gameBoard));
-  } else
-    return newNumber(moveTilesDown(gameBoard));
-}
+const moveTilesUp = (gameBoard: TileType[][]): TileType[][] => {
+  const transposedBoard = gameBoard[0].map((_, colIndex) => gameBoard.map(row => row[colIndex]));
+  const newBoard = transposedBoard.map(row => compress(merge(compress(row))));
+  return newBoard[0].map((_, rowIndex) => newBoard.map(row => row[rowIndex]));
+};
 
-export const compress = (line: TileType[]): TileType[] => {
-    const newLine = line.filter(tile => tile.value !== -1);
-    while (newLine.length < line.length) {
-      newLine.push({ value: -1 });
+const moveTilesDown = (gameBoard: TileType[][]): TileType[][] => {
+  const transposedBoard = gameBoard[0].map((_, colIndex) => gameBoard.map(row => row[colIndex]));
+  const newBoard = transposedBoard.map(row => compress(merge(compress(row.reverse()))).reverse());
+  return newBoard[0].map((_, rowIndex) => newBoard.map(row => row[rowIndex]));
+};
+
+export const moveTiles = (direction: string, gameBoard: TileType[][]): TileType[][] => {
+  let newBoard;
+  if (direction === 'left') {
+    newBoard = moveTilesLeft(gameBoard);
+  } else if (direction === 'right') {
+    newBoard = moveTilesRight(gameBoard);
+  } else if (direction === 'up') {
+    newBoard = moveTilesUp(gameBoard);
+  } else if (direction === 'down') {
+    newBoard = moveTilesDown(gameBoard);
+  } else {
+    return gameBoard;
+  }
+  return newBoard;
+};
+
+export const checkGameOver = (gameBoard: TileType[][]): boolean => {
+  if (gameBoard.flat().every(tile => tile.value !== -1)) {
+    for (let i = 0; i < 4; i++) {
+      for (let j = 0; j < 4; j++) {
+        if (i < 3 && gameBoard[i][j].value === gameBoard[i + 1][j].value) return false;
+        if (j < 3 && gameBoard[i][j].value === gameBoard[i][j + 1].value) return false;
+      }
     }
-    return newLine;
-  };
-
-  const moveTilesLeft = (gameBoard: TileType[][]): TileType[][] => {
-    return gameBoard.map(row => merge(compress(row)));
+    return true;
   }
+  return false;
+};
 
-  const moveTilesRight = (gameBoard: TileType[][]): TileType[][] => {
-    return gameBoard.map(row => merge(compress(row).reverse()));
-  }
-
-  const moveTilesUp = (gameBoard: TileType[][]): TileType[][] => {
-    let newBoard = gameBoard[0].map((_, colIndex) => gameBoard.map(row => row[colIndex]));
-    newBoard = newBoard.map(row => merge(compress(row)));
-    return newBoard[0].map((_, colIndex) => newBoard.map(row => row[colIndex])); 
-}
-
-  const moveTilesDown = (gameBoard: TileType[][]): TileType[][] => {
-    let newBoard = gameBoard[0].map((_, colIndex) => gameBoard.map(row => row[colIndex]));
-    newBoard = newBoard.map(row => merge(compress(row).reverse()));
-    return newBoard[0].map((_, colIndex) => newBoard.map(row => row[colIndex]));
-  }
+export const checkWin = (gameBoard: TileType[][]): boolean => {
+  return gameBoard.flat().some(tile => tile.value === 2048);
+};
